@@ -1,5 +1,27 @@
 <script setup lang="ts">
+import { onBeforeMount } from "vue";
 import { name } from "../package.json";
+import { FetchError } from './utils/error';
+
+onBeforeMount(() => {
+  fetch('https://dummyjson.com/products/10000')
+    .then(res => {
+      if (!res.ok) {
+        throw new FetchError(res.statusText, res.status)
+      }
+      return res
+    })
+    .then(res => res.json())
+    .then(data => console.log(data))
+    .catch(err => {
+      if (err instanceof FetchError) {
+        console.log('FetchError occurred')
+        console.error(err.getStatusCode())
+      } else {
+        console.error(err.message || err.name)
+      }
+    })
+})
 </script>
 
 <template>
